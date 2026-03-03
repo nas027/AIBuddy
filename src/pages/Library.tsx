@@ -5,6 +5,7 @@ import { ArrowLeft, BookOpen, Trash2, RotateCcw, Plus, Edit2, Search, X, Check }
 import { getSessions, StudySession, deleteSession, updateSession } from '../services/storage';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '../services/theme';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 export default function Library() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function Library() {
   const [searchTerm, setSearchTerm] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTopicName, setEditTopicName] = useState('');
+  const [sessionToDelete, setSessionToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     setSessions(getSessions());
@@ -20,9 +22,14 @@ export default function Library() {
 
   const handleDelete = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (confirm('ลบประวัติการติวนี้ไหม?')) {
-      deleteSession(id);
+    setSessionToDelete(id);
+  };
+
+  const confirmDelete = () => {
+    if (sessionToDelete) {
+      deleteSession(sessionToDelete);
       setSessions(getSessions());
+      setSessionToDelete(null);
     }
   };
 
@@ -58,6 +65,14 @@ export default function Library() {
 
   return (
     <div className="min-h-screen p-6 max-w-md mx-auto relative transition-colors duration-300">
+      <ConfirmDialog
+        isOpen={!!sessionToDelete}
+        title="ลบประวัติการติว"
+        message="คุณแน่ใจหรือไม่ว่าต้องการลบประวัติการติวนี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
+        onConfirm={confirmDelete}
+        onCancel={() => setSessionToDelete(null)}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6 mt-4">
         <div className="flex items-center">

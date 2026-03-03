@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import html2canvas from 'html2canvas';
 import confetti from 'canvas-confetti';
 import { useTheme } from '../services/theme';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 interface MindMapNode {
   id: string;
@@ -124,9 +125,7 @@ export default function StudyResult() {
     // Check if user has hint item
     const user = getCurrentUser();
     if (!user || (user.consumables.hint || 0) <= 0) {
-      if (confirm("ไม่มีไอเทมคำใบ้! ไปซื้อที่ร้านค้าไหม?")) {
-        navigate('/store');
-      }
+      setShowHintConfirm(true);
       return;
     }
 
@@ -169,6 +168,7 @@ export default function StudyResult() {
 
   const [editPrompt, setEditPrompt] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [showHintConfirm, setShowHintConfirm] = useState(false);
 
   const [isGeneratingMindMap, setIsGeneratingMindMap] = useState(false);
 
@@ -263,6 +263,15 @@ export default function StudyResult() {
            backgroundSize: '20px 20px'
          }}
     >
+      <ConfirmDialog
+        isOpen={showHintConfirm}
+        title="ไอเทมคำใบ้หมด!"
+        message="คุณไม่มีไอเทมคำใบ้เหลืออยู่ ต้องการไปซื้อที่ร้านค้าหรือไม่?"
+        onConfirm={() => navigate('/store')}
+        onCancel={() => setShowHintConfirm(false)}
+        confirmText="ไปร้านค้า"
+      />
+
       {/* Header */}
       <div className="p-4 flex items-center justify-between sticky top-0 z-20 bg-white/80 backdrop-blur-sm border-b border-gray-100">
         <button onClick={() => navigate('/')} className="p-2 hover:bg-black/5 rounded-full transition-colors text-gray-600">
@@ -563,7 +572,7 @@ export default function StudyResult() {
               <div className="text-center">
                  <p className="text-gray-500 mb-4">ยังไม่มี Infographic</p>
                  <button 
-                    onClick={handleGenerateInfographic}
+                    onClick={() => handleGenerateInfographic()}
                     disabled={isGeneratingInfographic}
                     className="bg-[#A78BFA] text-white font-bold py-3 px-6 rounded-full shadow-pop border-2 border-black font-handwriting flex items-center gap-2 mx-auto"
                   >

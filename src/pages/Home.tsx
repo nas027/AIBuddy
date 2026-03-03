@@ -5,11 +5,13 @@ import { CheckCircle, ShoppingBag, LogOut, Star } from 'lucide-react';
 import { getCurrentUser, getNextLevelXP, claimQuestReward, User, setCurrentUser } from '../services/storage';
 import { motion } from 'motion/react';
 import { useTheme } from '../services/theme';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 export default function Home() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const [user, setUser] = useState<User | null>(null);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   
   useEffect(() => {
     const currentUser = getCurrentUser();
@@ -19,10 +21,12 @@ export default function Home() {
   }, []);
 
   const handleLogout = () => {
-    if (confirm('ออกจากระบบไหม?')) {
-      setCurrentUser(null);
-      window.location.href = '/';
-    }
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
+    setCurrentUser(null);
+    window.location.href = '/';
   };
 
   const handleClaimReward = (questId: string) => {
@@ -38,6 +42,14 @@ export default function Home() {
   return (
     <div className="min-h-screen p-4 pb-24 max-w-md mx-auto relative overflow-hidden transition-colors duration-300 font-body">
       
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        title="ออกจากระบบ"
+        message="คุณแน่ใจหรือไม่ว่าต้องการออกจากระบบ?"
+        onConfirm={confirmLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
+
       {/* Top Bar */}
       <div className="flex items-center justify-between mb-6 bg-white/80 backdrop-blur-sm p-3 rounded-2xl shadow-sm border border-gray-100">
         <div className="flex items-center gap-3">

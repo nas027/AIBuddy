@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Card, Mascot } from '../components/UI';
 import { ArrowLeft, Plus, Trash2, Wand2, CheckSquare, Square, ArrowRight, ArrowLeft as ArrowLeftIcon, Clock, CheckCircle2, Circle } from 'lucide-react';
-import { getHomework, addHomework, deleteHomework, updateHomework, HomeworkTask } from '../services/storage';
+import { getHomework, addHomework, deleteHomework, updateHomework, HomeworkTask, updateQuestProgress } from '../services/storage';
 import { breakdownHomework } from '../services/gemini';
 import { v4 as uuidv4 } from 'uuid';
 import { motion, AnimatePresence } from 'motion/react';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { useTheme } from '../services/theme';
 
 export default function Homework() {
@@ -13,6 +14,7 @@ export default function Homework() {
   const { theme } = useTheme();
   const [tasks, setTasks] = useState<HomeworkTask[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
   
   // Form State
   const [subject, setSubject] = useState('');
@@ -83,6 +85,10 @@ export default function Homework() {
     };
     updateHomework(updatedTask);
     refreshTasks();
+
+    if (newStatus === 'done' && task.status !== 'done') {
+      updateQuestProgress('homework');
+    }
   };
 
   const toggleSubtask = (task: HomeworkTask, subtaskId: string) => {
@@ -107,9 +113,14 @@ export default function Homework() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('ลบงานนี้จริงหรอ?')) {
-      deleteHomework(id);
+    setTaskToDelete(id);
+  };
+
+  const confirmDelete = () => {
+    if (taskToDelete) {
+      deleteHomework(taskToDelete);
       refreshTasks();
+      setTaskToDelete(null);
     }
   };
 
@@ -252,6 +263,14 @@ export default function Homework() {
       </div>
 
       {/* Add Modal */}
+      <ConfirmDialog
+        isOpen={!!taskToDelete}
+        title="ลบการบ้าน"
+        message="คุณแน่ใจหรือไม่ว่าต้องการลบการบ้านนี้? การกระทำนี้ไม่สามารถย้อนกลับได้"
+        onConfirm={confirmDelete}
+        onCancel={() => setTaskToDelete(null)}
+      />
+
       <AnimatePresence>
         {showAddModal && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">

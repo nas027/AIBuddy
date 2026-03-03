@@ -290,11 +290,11 @@ export const breakdownHomework = async (subject: string, topic: string): Promise
 
   const response = await ai.models.generateContent({
     model: modelId,
-    contents: `Help me plan my homework.
-    Subject: ${subject}
-    Topic: ${topic}
-    Break this down into 3-5 small, manageable steps (checklist) for a student.
-    Keep it encouraging!`,
+    contents: `ช่วยวางแผนการทำการบ้านให้หน่อย
+    วิชา: ${subject}
+    หัวข้อ: ${topic}
+    ช่วยย่อยงานนี้ออกเป็น 3-5 ขั้นตอนย่อยๆ (checklist) ที่นักเรียนสามารถทำตามได้ง่ายๆ
+    ขอคำแนะนำที่ให้กำลังใจ และ **ตอบกลับเป็นภาษาไทยทั้งหมด**`,
     config: {
       responseMimeType: "application/json",
       responseSchema: {

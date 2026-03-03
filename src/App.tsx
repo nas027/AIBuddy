@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import StudyInput from './pages/StudyInput';
 import StudyResult from './pages/StudyResult';
@@ -62,7 +62,7 @@ export default function App() {
 
   return (
     <LanguageProvider>
-      <BrowserRouter>
+      <Router>
         <div className="pb-20"> {/* Add padding for bottom nav */}
           <Routes>
             <Route path="/" element={<Home />} />
@@ -84,7 +84,7 @@ export default function App() {
         {showMoodCheckIn && (
           <MoodCheckIn onClose={() => setShowMoodCheckIn(false)} />
         )}
-      </BrowserRouter>
+      </Router>
     </LanguageProvider>
   );
 }

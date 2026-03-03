@@ -279,9 +279,10 @@ export const claimQuestReward = (questId: string) => {
   const quest = user.dailyQuests.find(q => q.id === questId);
   if (quest && quest.completed && !quest.claimed) {
     quest.claimed = true;
+    saveUser(user); // Save claimed status first to prevent overwriting
+    
     if (quest.reward.type === 'xp') addXP(quest.reward.amount);
     if (quest.reward.type === 'coin') addCoins(quest.reward.amount);
-    saveUser(user);
   }
 };
 
